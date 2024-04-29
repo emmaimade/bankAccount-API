@@ -1,11 +1,14 @@
 class BankAccount {
-    constructor(accountNumber, firstName, lastName, balance) {
+    constructor(accountNumber, firstName, lastName, balance, dailyWithdrawalLimit) {
         this._accountNumber = accountNumber;
         this._firstName = firstName;
         this._lastName = lastName;
         this._accountHolder = `${firstName} ${lastName}`;
         this._balance = balance;
         this._transactions = [];
+        this._dailyWithdrawalLimit = dailyWithdrawalLimit
+        this._withdrawnToday = 0;
+        this._lastWithdrawalDate = new Date().getDate();
     }
 
     get accountNumber() {
@@ -34,35 +37,75 @@ class BankAccount {
         }
         else {
             this._balance += amount;
+            this._transactions.push(new Transaction('Deposit', amount));
             return `${this._accountHolder}, ${amount} has been deposited to your account. Your new balance is ${this._balance}`
         }
     }
     
     withdraw(amount) {
-        if (this._balance >= amount) {
-            this._balance -= amount;
-            return `${this._accountHolder}, ${amount} has been withdrawn from your account. Your new balance is ${this._balance}`
-        } 
-        else {
+        const today = new Date().getDate();
+
+        // Checks if its a new day and reset amount withdrawn today if necessary
+        if (today !== this._lastWithdrawalDate){
+            this._withdrawnToday = 0;
+            this._lastWithdrawalDate = today;
+        }
+
+        // Checks if there is enough balance for withdrawal
+        if (amount > this._balance) {
             throw new Error('Insufficient funds');
         }
+
+        // Checks if the amount exceeds the daily withdrawal limit
+        if ((this._withdrawnToday + amount) > this._dailyWithdrawalLimit) {
+            throw new Error('Exceeds Daily Withdrawal Limit')
+        }
+
+        this._balance -= amount;
+        this._withdrawnToday += amount;
+        this._transactions.push(new Transaction('Withdrawal', amount));
+        return `${this._accountHolder}, ${amount} has been withdrawn from your account. Your new balance is ${this._balance}`
+       
+    }
+
+    transfer(amount, recipientAccount) {
+
+        // Checks if the amount is positive
+        if (amount < 0) {
+            throw new Error('Invalid transfer amount');
+        }
         
+        // Checks if there is enough balance for transfer
+        if (amount > this._balance) {
+            throw new Error('Insufficient funds');
+        }
+
+        // Checks if the amount exceeds the daily withdrawal limit
+        if ((this._withdrawnToday + amount) > this._dailyWithdrawalLimit) {
+            throw new Error('Exceeds Daily Withdrawal Limit')
+        }
+
+        this._balance -= amount;
+        this._withdrawnToday += amount;
+        recipientAccount.deposit(amount);
+        this._transactions.push(new Transaction('Transfer', amount));
+        return `You transferred ${amount} from this ${this._accountNumber} to ${recipientAccount.accountNumber}.`;
     }
 
     getTransactions() {
         console.log(`Transaction History of ${this._accountHolder}`);
         this._transactions.forEach(transaction => {
-            console.log(`Type: ${transaction.type}, Amount: ${transaction.amount}, Timestamp: ${transaction.timestamp}`)
+            // console.log(`Type: ${transaction.type}, Amount: ${transaction.amount}, Timestamp: ${transaction.timestamp}`)
+            console.log(`${transaction.type} of ${transaction.amount} at ${transaction.timestamp}`)
         });
     }
 }
 
-class Transaction extends BankAccount {
-    constructor(accountNumber, firstName, lastName, balance, type, amount, timestamp) {
-        super(accountNumber, firstName, lastName, balance);
+class Transaction  {
+    constructor(type, amount) {
         this._type = type;
         this._amount = amount;
-        this._timestamp = timestamp;
+        this._timestamp = new Date();
     }
 
     get type () {
@@ -76,63 +119,32 @@ class Transaction extends BankAccount {
     get timestamp () {
         return this._timestamp;
     }
-
-    addTransactions(transaction) {
-        // checks the datatype of transaction
-        if (typeof transaction !== "object") {
-            throw new Error(`transaction passed is of type ${typeof transaction}, it should be of type of object`);
-        }
-
-        // checks the type of transaction
-        if (transaction.type === 'deposit') {
-            this._type = transaction.type;
-            this._amount = transaction.amount;
-            super.deposit(this._amount);
-        }
-        else if (transaction.type === 'withdraw') {
-            this._type = transaction.type;
-            this._amount = transaction.amount;
-            super.withdraw(this._amount);
-        }
-        else {
-            throw new Error('Invalid transaction type');
-        }
-
-        
-        this._timestamp = new Date(); // Generate timestamp
-        transaction.timestamp = this._timestamp
-        
-        // adds the transaction to the transactions array
-        this._transactions.push(transaction);
-        // console.log(`Transaction successfully added`);
-    }
 }
 
-const client1 = new Transaction("0035682914","Jane", "Doe", 20000);
+const client1 = new BankAccount(3035682914,"Jane", "Doe", 20000, 10000);
+const client2 = new BankAccount(7701770147, "John", "Doe", 1000, 500);
 
 
 console.log('Account Number:', client1.accountNumber);
-console.log('Account Name:', client1._accountHolder);
-console.log('Account Balance:', client1._balance);
+console.log('Account Name:', client1.accountHolder);
+console.log('Account Balance:', client1.balance);
 
-transaction1 = {
-    type: "deposit",
-    amount: 40000
-}
+console.log(client1.balance)
+console.log(client2.balance)
 
-transaction2 = {
-    type: "withdraw",
-    amount: 50000
-}
+
 
 try {
-    client1.addTransactions(transaction1);
-    client1.addTransactions(transaction2);
-    // console.log(client1.withdraw(12000));
-    // console.log(client1.deposit(8));
+    client2.deposit(2000);
+    client1.withdraw(5000);
+    client1.transfer(5000, client2);
+    client2.transfer(100, client1)
 } catch (error) {
     console.log(error.message);
 }
 
 client1.getTransactions();
+client2.getTransactions();
 
+console.log(client1.balance)
+console.log(client2.balance)
