@@ -5,4 +5,5 @@ The following actions can be performed using this system:
 1. Deposit money into the account.
 2. Withdraw money from the account.
 3. View transaction history.
-4. Transfer between accounts
+4. Transfer between accounts.
+5. Daily Withdrawal Limit of an account.
