@@ -1,12 +1,18 @@
 const asynchandler = require('express-async-handler');
-const Account = require('../../models/Account');
 const bcrypt = require('bcrypt');
+const validator = require('validator');
+const Account = require('../../models/Account');
 
 const createAccount = asynchandler (async (req, res) => {
     const { firstName, lastName, email, password } = req.body;
 
     if (!firstName || !lastName || !email || !password ) {
         return res.status(400).send({ message: "Please provide all the details"});
+    }
+
+    // check if email is valid
+    if (!validator.isEmail(email)) {
+        return res.status(400).send({ message: "Please provide a valid email"});
     }
 
     // create account Name
@@ -38,6 +44,12 @@ const createAccount = asynchandler (async (req, res) => {
     res.status(201).send(account);
 });
 
+const getAccounts = asynchandler (async (req, res) => {
+    const accounts = await Account.find();
+    res.status(200).send(accounts);
+});
+
 module.exports = {
-    createAccount
+    createAccount,
+    getAccounts
 }
