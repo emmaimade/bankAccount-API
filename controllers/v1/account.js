@@ -45,7 +45,7 @@ const createAccount = asynchandler (async (req, res) => {
 });
 
 const getAccounts = asynchandler (async (req, res) => {
-    const accounts = await Account.find();
+    const accounts = await Account.find({ isArchived: false });
     res.status(200).send(accounts);
 });
 
@@ -91,9 +91,24 @@ const updateAccount = asynchandler (async (req, res) => {
     res.status(200).send(account);
 });
 
+const archiveAccount = asynchandler (async (req, res) => {
+    const id = req.params.id;
+
+    // checks if account exists
+    const account = await Account.findById(id);
+    if (!account) {
+        return res.status(404).send({ message: "Account does not exist"});
+    }
+    account.isArchived = true;
+    await account.save();
+
+    res.status(200).send({ message: "Account archived successfully" });
+});
+
 module.exports = {
     createAccount,
     getAccounts,
     getAccount,
-    updateAccount
+    updateAccount,
+    archiveAccount
 }

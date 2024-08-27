@@ -40,6 +40,10 @@ const accountSchema = new mongoose.Schema(
                 ref: 'Transaction'
             }],
             required: false
+        },
+        isArchived: {
+            type: Boolean,
+            default: false
         }
     },
     { timestamps: true }
