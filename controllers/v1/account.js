@@ -49,7 +49,51 @@ const getAccounts = asynchandler (async (req, res) => {
     res.status(200).send(accounts);
 });
 
+const getAccount = asynchandler (async (req, res) => {
+    const id = req.params.id;
+    console.log(id);
+
+    const account = await Account.findById(id);
+    if (!account) {
+        return res.status(404).send({ message: "Account not found"});
+    }
+
+    res.status(200).send(account);
+});
+
+const updateAccount = asynchandler (async (req, res) => {
+    const id = req.params.id;
+    const { firstName, lastName, email } = req.body;
+
+    // check if account exists
+    const account = await Account.findById(id);
+    if (!account) {
+        return res.status(404).send({ message: "Account does not exist"});
+    }
+
+    if (firstName) account.firstName = firstName;
+    if (lastName) account.lastName = lastName;
+
+    if (email) {
+        // check if email is valid
+        if (!validator.isEmail(email)) {
+            return res.status(400).send({ message: "Please provide a valid email"});
+        }
+        account.email = email;
+    }
+   
+    // update account holder name
+    account.accountHolder = `${firstName || account.firstName} ${lastName || account.lastName}`;
+
+    // save account
+    await account.save();
+
+    res.status(200).send(account);
+});
+
 module.exports = {
     createAccount,
-    getAccounts
+    getAccounts,
+    getAccount,
+    updateAccount
 }
