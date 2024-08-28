@@ -7,75 +7,73 @@ const Account = require('../../models/Account');
 const validNationalities = getNames();
 
 const createAccount = asynchandler (async (req, res) => {
-    const { firstName, lastName, email, phoneNumber, password, gender, dateOfBirth, nationality, address } = req.body;
+    try {   
+        const { firstName, lastName, email, phoneNumber, password, gender, dateOfBirth, nationality, address } = req.body;
 
-    if (!firstName || !lastName || !email || !phoneNumber || !password || !gender || !dateOfBirth || !nationality || !address) {
-        return res.status(400).send({ message: "Please provide all the details"});
+        if (!firstName || !lastName || !email || !phoneNumber || !password || !gender || !dateOfBirth || !nationality || !address) {
+            return res.status(400).send({ message: "Please provide all the details"});
+        }
+
+        // check if email is valid
+        if (!validator.isEmail(email)) {
+            return res.status(400).send({ message: "Please provide a valid email"});
+        }
+
+        // check if phone number is valid
+        if (!validator.isMobilePhone(phoneNumber, 'any')) {
+            return res.status(400).send({ message: "Please provide a valid phone number"});
+        }
+
+        // Validate gender
+        if (!['male', 'female'].includes(gender.toLowerCase())) {
+            return res.status(400).send({ message: "Gender must be 'male' or 'female'." });
+        }
+
+        // Validate dateOfBirth
+        if (!validator.isDate(dateOfBirth)) {
+            return res.status(400).send({ message: "Date of birth must be a valid date. yyyy-mm-dd" });
+        }
+
+        // Validate nationality
+        if (!validNationalities.includes(nationality)) {
+            return res.status(400).send({ message: "Please provide a valid nationality." });
+        }
+
+        // create account Name
+        const accountHolder = `${firstName} ${lastName}`;
+
+        // generate 10 digits accountNumber
+        const generateAccountNumber = () => {
+            return Math.floor(1000000000 + Math.random() * 9000000000);
+        }
+
+        const accountNumber = generateAccountNumber();
+
+        // hash password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // create account
+        const account = new Account({
+            firstName,
+            lastName,
+            accountHolder,
+            accountNumber,
+            email,
+            phoneNumber,
+            password: hashedPassword,
+            gender: gender.toLowerCase(),
+            dateOfBirth: new Date(dateOfBirth),
+            nationality,
+            address
+        });
+
+        // save account
+        await account.save();
+
+        res.status(201).send(account);
+    } catch (error) {
+        res.status(500).send({ message: error.message});
     }
-
-    // check if email is valid
-    if (!validator.isEmail(email)) {
-        return res.status(400).send({ message: "Please provide a valid email"});
-    }
-
-    // check if phone number is valid
-    if (!validator.isMobilePhone(phoneNumber, 'any')) {
-        return res.status(400).send({ message: "Please provide a valid phone number"});
-    }
-
-    // Validate gender
-    if (!['male', 'female'].includes(gender.toLowerCase())) {
-        return res.status(400).send({ message: "Gender must be 'male' or 'female'." });
-    }
-
-    // Validate dateOfBirth
-    if (!validator.isDate(dateOfBirth)) {
-        return res.status(400).send({ message: "Date of birth must be a valid date. yyyy-mm-dd" });
-    }
-
-    // Validate nationality
-    if (!validNationalities.includes(nationality)) {
-        return res.status(400).send({ message: "Please provide a valid nationality." });
-    }
-
-    // check if address fields are valid
-    if (!address.street || !address.local_government || !address.state || !address.country) {
-        return res.status(400).send({ message: "Please provide a valid address"});
-    }
-
-
-    // create account Name
-    const accountHolder = `${firstName} ${lastName}`;
-
-    // generate 10 digits accountNumber
-    const generateAccountNumber = () => {
-        return Math.floor(1000000000 + Math.random() * 9000000000);
-    }
-
-    const accountNumber = generateAccountNumber();
-
-    // hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // create account
-    const account = new Account({
-        firstName,
-        lastName,
-        accountHolder,
-        accountNumber,
-        email,
-        phoneNumber,
-        password: hashedPassword,
-        gender: gender.toLowerCase(),
-        dateOfBirth: new Date(dateOfBirth),
-        nationality,
-        address
-    });
-
-    // save account
-    await account.save();
-
-    res.status(201).send(account);
 });
 
 const getAccounts = asynchandler (async (req, res) => {
