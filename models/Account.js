@@ -24,10 +24,45 @@ const accountSchema = new mongoose.Schema(
             type: String,
             required: true
         },
+        phoneNumber: {
+            type: String,
+            required: true
+        },
         password: {
             type: String,
             required: true,
             unique: true
+        },
+        gender: {
+            type: String,
+            enum: ['male', 'female'],
+            required: true
+        },
+        dateOfBirth: {
+            type: Date,
+            required: true
+        },
+        nationality: {
+            type: String,
+            required: true
+        },
+        address: {
+            street: {
+                type: String,
+                required: true
+            },
+            local_government: {
+                type: String,
+                required: true
+            },
+            state: {
+                type: String,
+                required: true
+            },
+            country: {
+                type: String,
+                required: true
+            }
         },
         balance: {
             type: Number,
