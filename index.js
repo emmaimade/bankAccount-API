@@ -13,6 +13,7 @@ app.use(express.json());
 
 // routes
 app.use("/v1/account/", require("./routes/v1/account"));
+app.use("/v1/auth/", require("./routes/v1/auth"));
 
 // class Transaction  {
 //     constructor(type, amount) {

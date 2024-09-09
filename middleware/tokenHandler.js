@@ -10,7 +10,7 @@ const verifyToken = asynchandler(async (req, res, next) => {
     if (!token) {
         res.status(400).json({ error: "Not authorized, no token" });
     }
-
+    
     token = token.split(' ')[1];
     jwt.verify(token, JWT_SECRET, (err, decoded) => {
         if(err) {

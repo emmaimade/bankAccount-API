@@ -23,7 +23,7 @@ const login = asynchandler(async (req, res) => {
 
     const token = jwt.sign({ id: user._id, accountNumber: user.accountNumber }, process.env.JWT_SECRET, { expiresIn: "1h"});
 
-    res.status(200).json(token);
+    res.status(200).json({"Token": token});
 });
 
 module.exports = { login };
