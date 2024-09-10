@@ -164,11 +164,27 @@ const unArchiveAccount = asynchandler (async (req, res) => {
     res.status(200).send({ message: "Account unarchived successfully" });
 });
 
+const dailyWithdrawalLimit = asynchandler (async (req, res) => {
+    const id = req.user.id;
+    const { dailyWithdrawalLimit } = req.body;
+
+    const account = await Account.findById(id);
+    if (!account) {
+        return res.status(404).send({ message: "Account does not exist"});
+    }
+    
+    account.dailyWithdrawalLimit = dailyWithdrawalLimit;
+    await account.save();
+
+    res.status(200).send({ message: "Daily withdrawal limit updated successfully" });
+});
+
 module.exports = {
     createAccount,
     getAccounts,
     getAccount,
     updateAccount,
     archiveAccount,
-    unArchiveAccount
+    unArchiveAccount,
+    dailyWithdrawalLimit
 }

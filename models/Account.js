@@ -69,6 +69,11 @@ const accountSchema = new mongoose.Schema(
             required: true,
             default: 0
         },
+        dailyWithdrawalLimit: {
+            type: Number,
+            required: true,
+            default: 50000
+        },
         transactions: {
             type: [{
                 type: mongoose.Schema.Types.ObjectId,
