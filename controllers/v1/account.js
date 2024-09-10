@@ -85,7 +85,7 @@ const getAccount = asynchandler (async (req, res) => {
     const id = req.user.id;
     console.log(id);
 
-    const account = await Account.findById(id);
+    const account = await Account.findById(id).populate('transactions');
     if (!account) {
         return res.status(404).send({ message: "Account not found"});
     }
@@ -173,6 +173,9 @@ const dailyWithdrawalLimit = asynchandler (async (req, res) => {
         return res.status(404).send({ message: "Account does not exist"});
     }
     
+    if (dailyWithdrawalLimit <= 0) {
+        return res.status(400).send({ message: "Daily withdrawal limit must be greater than 0"});
+    }
     account.dailyWithdrawalLimit = dailyWithdrawalLimit;
     await account.save();
 
