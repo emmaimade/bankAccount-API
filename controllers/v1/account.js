@@ -83,9 +83,8 @@ const getAccounts = asynchandler (async (req, res) => {
 
 const getAccount = asynchandler (async (req, res) => {
     const id = req.user.id;
-    console.log(id);
 
-    const account = await Account.findById(id).populate('transactions');
+    const account = await Account.findById(id);
     if (!account) {
         return res.status(404).send({ message: "Account not found"});
     }
