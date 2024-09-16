@@ -5,7 +5,7 @@ const {
   getAccount,
   updateAccount,
   archiveAccount,
-  unArchiveAccount,
+  // unArchiveAccount,
   dailyWithdrawalLimit,
 } = require("../../controllers/v1/account");
 const verifyToken = require("../../middleware/tokenHandler");
@@ -18,6 +18,6 @@ router.get("/currentuser", verifyToken, getAccount);
 router.patch("/", verifyToken, updateAccount);
 router.patch("/withdrawalLimit", verifyToken, dailyWithdrawalLimit);
 router.delete("/", verifyToken, archiveAccount);
-router.patch("/unarchive", verifyToken, unArchiveAccount);
+// router.patch("/unarchive", verifyToken, unArchiveAccount);
 
 module.exports = router;

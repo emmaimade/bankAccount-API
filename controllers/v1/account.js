@@ -149,19 +149,19 @@ const archiveAccount = asynchandler (async (req, res) => {
     res.status(200).send({ message: "Account archived successfully" });
 });
 
-const unArchiveAccount = asynchandler (async (req, res) => {
-    const id = req.user.id;
+// const unArchiveAccount = asynchandler (async (req, res) => {
+//     const id = req.user.id;
 
-    // checks if account exists
-    const account = await Account.findById(id);
-    if (!account) {
-        return res.status(404).send({ message: "Account does not exist"});
-    }
-    account.isArchived = false;
-    await account.save();
+//     // checks if account exists
+//     const account = await Account.findById(id);
+//     if (!account) {
+//         return res.status(404).send({ message: "Account does not exist"});
+//     }
+//     account.isArchived = false;
+//     await account.save();
 
-    res.status(200).send({ message: "Account unarchived successfully" });
-});
+//     res.status(200).send({ message: "Account unarchived successfully" });
+// });
 
 const dailyWithdrawalLimit = asynchandler (async (req, res) => {
     const id = req.user.id;
@@ -172,8 +172,8 @@ const dailyWithdrawalLimit = asynchandler (async (req, res) => {
         return res.status(404).send({ message: "Account does not exist"});
     }
     
-    if (dailyWithdrawalLimit <= 0) {
-        return res.status(400).send({ message: "Daily withdrawal limit must be greater than 0"});
+    if (dailyWithdrawalLimit <= 50000) {
+        return res.status(400).send({ message: "Daily withdrawal limit must be greater than 50000"});
     }
     account.dailyWithdrawalLimit = dailyWithdrawalLimit;
     await account.save();
@@ -187,6 +187,6 @@ module.exports = {
     getAccount,
     updateAccount,
     archiveAccount,
-    unArchiveAccount,
+    // unArchiveAccount,
     dailyWithdrawalLimit
 }

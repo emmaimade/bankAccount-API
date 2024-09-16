@@ -5,11 +5,6 @@ const Account = require('../../models/Account');
 const Transaction = require('../../models/Transaction');
 
 const getTransactions = asynchandler(async (req, res) => {
-    const transactions = await Transaction.find();
-    res.status(200).json(transactions);
-});
-
-const getTransaction = asynchandler(async (req, res) => {
     const id = req.user.id
 
     const transactions = await Transaction.find({ user: id });
@@ -172,7 +167,6 @@ const transfer = asynchandler(async (req, res) => {
 
 module.exports = {
     getTransactions,
-    getTransaction,
     withdrawal,
     deposit,
     transfer
