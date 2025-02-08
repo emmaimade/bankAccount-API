@@ -1,9 +1,31 @@
-This is a simulation of a bank account system.
+# BankAccount API 🏦
 
-The following actions can be performed using this system:
+This is a simulation of a bank account system that allows users to manage their accounts, make transactions, and track their financial activities.
 
-1. Deposit money into the account.
-2. Withdraw money from the account.
-3. View transaction history.
-4. Transfer between accounts.
-5. Daily Withdrawal Limit of an account.
+## Features
+- ✅ Deposit money into the account
+- ✅ Withdraw money from the account
+- ✅ View transaction history
+- ✅ Transfer between accounts
+- ✅ Daily Withdrawal Limit of an account
+
+## Technologies Used
+- Node.js
+- Express.js
+
+## Install Dependencies
+	npm install
+
+## Run the Application
+	npm start
+
+## API Endpoints 🌐
+
+| Method | Endpoint | Description  |
+|---------------|---------------|---------|
+| POST     | /account/      | Create account  |
+| POST     | /transaction/deposit      | Deposit money into account  |
+| POST     | /transaction/withdraw    | Withdraw money from account  |
+| POST     | /transaction/transfer    | Transfer funds between accounts  |
+| GET     | /transaction/    | View transaction history  |
+
